@@ -20,7 +20,7 @@ def addtarget(portmap):
     API_URL = "http://%s:%s/api/targets" % (API_HOST, API_PORT)
     for host, ports in portmap.items():
         for port, service in ports:
-            if service == 'https' or port==443:
+            if service == 'https' or port == 443:
                 URL = "https://%s:%s" % (host, port)
             elif service == 'http':
                 URL = "http://%s:%s" % (host, port)
@@ -29,7 +29,17 @@ def addtarget(portmap):
             with session() as c:
                 try:
                     response = c.post(API_URL, data=urldata)
-                    print response.text
+                    if not response.text:
+                        print "[*] Target %s was sucessfully added to OWTF" % URL
+                        COUNT += 1
+                    elif "Conflict" in response.text:
+                        print "[*] Target %s already exists in OWTF" % URL
+                    else:
+                        print "[*] Error occured while adding targets"
                 except ConnectionError:
                     print "[!] ERROR : Please check values in owtf.config (or, is OWTF running?)"
                     exit(1)
+    if COUNT:
+        print "[*] %d targets were successfully added to OWTF :)" % COUNT
+    else:
+        print "[*] No new targets were added to OWTF. Keep hacking :)"
