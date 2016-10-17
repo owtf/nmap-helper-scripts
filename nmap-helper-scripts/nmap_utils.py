@@ -1,6 +1,6 @@
 import argparse
-from utils import xmlparser
-from utils.owtf_api import addtarget
+from utils.fileparsers.xmlparser import parse_xml, map_http_ports
+from utils.owtf.owtf_api import addtarget
 
 
 def init_args():
@@ -15,9 +15,9 @@ def init_args():
 
 def main():
         args = init_args()
-        report = xmlparser.parse_xml(args.input)
+        report = parse_xml(args.input)
         if args.owtf:
-            portmap = xmlparser.map_http_ports(report)
+            portmap = map_http_ports(report)
             addtarget(portmap)
 
 

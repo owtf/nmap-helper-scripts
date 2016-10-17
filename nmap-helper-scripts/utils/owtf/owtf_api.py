@@ -4,7 +4,7 @@ from requests.exceptions import ConnectionError
 from ConfigParser import RawConfigParser, NoSectionError
 
 
-def parse_config():
+def _parse_config():
     config = RawConfigParser()
     config.read('owtf.config')
     port = config.get('owtf', 'port').strip('\'')
@@ -16,11 +16,11 @@ def addtarget(portmap):
     '''Accepts a dict of format { hostname :[<list of ports>] }'''
     COUNT = 0
     urldata = dict()
-    API_HOST, API_PORT = parse_config()
+    API_HOST, API_PORT = _parse_config()
     API_URL = "http://%s:%s/api/targets" % (API_HOST, API_PORT)
     for host, ports in portmap.items():
         for port, service in ports:
-            if service == 'https' or port == 443:
+            if service == 'https':
                 URL = "https://%s:%s" % (host, port)
             elif service == 'http':
                 URL = "http://%s:%s" % (host, port)
@@ -37,7 +37,7 @@ def addtarget(portmap):
                     else:
                         print "[*] Error occured while adding targets"
                 except ConnectionError:
-                    print "[!] ERROR : Please check values in owtf.config (or, is OWTF running?)"
+                    print "\n[!] ERROR : Please check values in owtf.config (or, is OWTF running?)"
                     exit(1)
     if COUNT:
         print "[*] %d targets were successfully added to OWTF :)" % COUNT
